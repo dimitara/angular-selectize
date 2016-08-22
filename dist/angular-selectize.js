@@ -57,24 +57,18 @@ angular.module('selectize', []).value('selectizeConfig', {}).directive("selectiz
                     selectize.$control.toggleClass('ng-dirty', modelCtrl.$dirty);
                     selectize.$control.toggleClass('ng-pristine', modelCtrl.$pristine);
 
-                    if (!angular.equals(selectize.items, scope.ngModel)) {
+                    if (!angular.equals(selectize.items, scope.ngModel) && scope.ngModel) {
                         //change: iterate over ngModel to collect values in order to set the right items
-                        selectize.setValue(scope.ngModel ? scope.ngModel.map(function(item) {
+                        selectize.setValue(scope.ngModel && scope.ngModel.length ? scope.ngModel.map(function(item) {
                             return item[scope.config.valueField];
-                        }) : [], true);
-                    }
+                        }) : scope.ngModel[scope.config.valueField], true);
+                    } 
                 }
 
                 settings.onChange = function(value) {
                     var value = angular.copy(selectize.items);
                     if (settings.maxItems == 1) {
-                        value = selectize.options.filter(function(o) {
-                            if (o === value[0]) {
-                                return 1;
-                            }
-
-                            return 0;
-                        });
+                        value = selectize.options[value[0]];
                     } else {
                         value = value.map(function(v) {
                             return selectize.options[v];
