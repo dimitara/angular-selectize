@@ -1,5 +1,8 @@
 angular-selectize
 ==================
+
+##DIMITAR: Support for object ngModel
+
 ![selectize5](https://cloud.githubusercontent.com/assets/4087667/5633745/2cfeac18-958f-11e4-9e62-6eba90547b4c.png)
 
 ###Demo
