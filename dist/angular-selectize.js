@@ -58,6 +58,7 @@ angular.module('selectize', []).value('selectizeConfig', {}).directive("selectiz
                     selectize.$control.toggleClass('ng-pristine', modelCtrl.$pristine);
 
                     if (!angular.equals(selectize.items, scope.ngModel)) {
+                        //change: iterate over ngModel to collect values in order to set the right items
                         selectize.setValue(scope.ngModel ? scope.ngModel.map(function(item) {
                             return item[scope.config.valueField];
                         }) : [], true);
