@@ -59,7 +59,7 @@ angular.module('selectize', []).value('selectizeConfig', {}).directive("selectiz
 
                     if (!angular.equals(selectize.items, scope.ngModel) && scope.ngModel) {
                         //change: iterate over ngModel to collect values in order to set the right items
-                        selectize.setValue(scope.ngModel && scope.ngModel.length ? scope.ngModel.map(function(item) {
+                        selectize.setValue(scope.ngModel && typeof scope.config.maxItems > 1 ? scope.ngModel.map(function(item) {                        
                             return item[scope.config.valueField];
                         }) : scope.ngModel[scope.config.valueField], true);
                     } 
