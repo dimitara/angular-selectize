@@ -32,7 +32,16 @@ angular.module('selectize', []).value('selectizeConfig', {}).directive("selectiz
                 }
 
                 var validate = function() {
-                    var isInvalid = (scope.ngRequired() || attrs.required || settings.required) && isEmpty(scope.ngModel);
+                    var isRequired = (scope.ngRequired() || attrs.required || settings.required);
+                    var isInvalid = false;
+                    
+                    if(scope.config.maxItems > 1) {
+                        isInvalid = isEmpty(scope.ngModel);
+                    }
+                    else {
+                        isInvalid = !scope.ngModel;
+                    }
+                    
                     modelCtrl.$setValidity('required', !isInvalid);
                 };
 
@@ -50,19 +59,32 @@ angular.module('selectize', []).value('selectizeConfig', {}).directive("selectiz
                 }
 
                 var setSelectizeValue = function() {
+                    if(typeof scope.ngModel !== 'object') {
+                        return ;
+                    }
+                    
                     validate();
-
+                    
                     selectize.$control.toggleClass('ng-valid', modelCtrl.$valid);
                     selectize.$control.toggleClass('ng-invalid', modelCtrl.$invalid);
                     selectize.$control.toggleClass('ng-dirty', modelCtrl.$dirty);
                     selectize.$control.toggleClass('ng-pristine', modelCtrl.$pristine);
 
                     if (!angular.equals(selectize.items, scope.ngModel) && scope.ngModel) {
+                        var value = null;
+
+                        if(scope.ngModel && scope.config.maxItems > 1) { 
+                            value = scope.ngModel.map(function(item) {
+                                return item[scope.config.valueField];
+                            });
+                        }
+                        else {
+                            value = scope.ngModel[scope.config.valueField];// [(typeof scope.ngModel === 'object' ? scope.ngModel[scope.config.valueField] : scope.ngModel)]
+                        }
+
                         //change: iterate over ngModel to collect values in order to set the right items
-                        selectize.setValue(scope.ngModel && typeof scope.config.maxItems > 1 ? scope.ngModel.map(function(item) {                        
-                            return item[scope.config.valueField];
-                        }) : scope.ngModel[scope.config.valueField], true);
-                    } 
+                        selectize.setValue(value, true);
+                    }
                 }
 
                 settings.onChange = function(value) {
@@ -106,6 +128,10 @@ angular.module('selectize', []).value('selectizeConfig', {}).directive("selectiz
                     scope.$watchCollection('options', setSelectizeOptions);
                     scope.$watch('ngModel', setSelectizeValue);
                     scope.$watch('ngDisabled', toggle);
+
+                    if(scope.config.maxItems === 1) {
+                        element.off('change');
+                    }
                 };
 
                 element.selectize(settings);
@@ -120,3 +146,4 @@ angular.module('selectize', []).value('selectizeConfig', {}).directive("selectiz
         };
     }
 ]);
+
